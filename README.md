@@ -4,8 +4,8 @@
 # Usage
 ```csharp
     public int no_arg_delaycall_timer_id = -1;
-    public int no_arg_call_everyframe_timer_id = -1;
-    public int no_arg_call_interval_timer_id = -1;
+    public int no_arg_everyframecall_timer_id = -1;
+    public int no_arg_intervalcall_timer_id = -1;
     public void UnitTest()
     {
         _Testing_DelayCall();
@@ -21,23 +21,23 @@
         }
 
         no_arg_delaycall_timer_id =
-            TimerMgr.Inst.DelayCallback(() => { Debug.Log("This is my delay call testing, after 2 seonds."); }, 2f);
+            TimerMgr.Inst.DelayCall(() => { Debug.Log("This is my delay call testing, after 2 seonds."); }, 2f);
     }
 
     private void _Testing_CallEveryFrame()
     {
-        if (no_arg_call_everyframe_timer_id != -1)
+        if (no_arg_everyframecall_timer_id != -1)
         {
-            TimerMgr.Inst.RemoveTimer(no_arg_call_everyframe_timer_id);
+            TimerMgr.Inst.RemoveTimer(no_arg_everyframecall_timer_id);
         }
 
         var counter = 0;
-        no_arg_call_everyframe_timer_id = TimerMgr.Inst.CallEveryFrame(() =>
+        no_arg_everyframecall_timer_id = TimerMgr.Inst.EveryFrameCall(() =>
         {
             if (++counter > 120) // 60 FPS，相当于每 2 秒输出一次
             {
                 counter = 0;
-                Debug.Log("This is my call everyframe tesitng.");
+                Debug.Log("This is my everyframe call tesitng.");
             }
         });
     }
@@ -51,15 +51,15 @@
 
     private void _Testing_CallInterval()
     {
-        if (no_arg_call_interval_timer_id != -1)
+        if (no_arg_intervalcall_timer_id != -1)
         {
-            TimerMgr<Player>.Inst.RemoveTimer(no_arg_call_interval_timer_id);
+            TimerMgr<Player>.Inst.RemoveTimer(no_arg_intervalcall_timer_id);
         }
 
-        no_arg_call_interval_timer_id = TimerMgr<Player>.Inst.CallInterval(player =>
+        no_arg_intervalcall_timer_id = TimerMgr<Player>.Inst.IntervalCall(player =>
         {
             player.pos += Vector2.one;
-            Debug.Log($"current player pos : {player.pos}");
+            Debug.Log($"call interval, current player pos : {player.pos}");
         }, player, 1.5f);
     }
 ```
