@@ -231,7 +231,7 @@ public class TimerMgr
 
                 if (timer.interval == 0)
                 {
-                    timer.on_update.Invoke();
+                    timer.on_update?.Invoke();
                     ++timer.act_times;
                 }
                 else
@@ -242,7 +242,7 @@ public class TimerMgr
                     if (timer.elapsed >= timer.interval)
                     { // 这里暂时不做补帧处理
                         timer.elapsed = timer.elapsed % timer.interval;
-                        timer.on_update.Invoke();
+                        timer.on_update?.Invoke();
                         ++timer.act_times;
                     }
                 }
@@ -426,7 +426,7 @@ public class TimerMgr<T> : ITimerUpdate
     }
 
     // 移除 callback 相同实例的多个 Timer，移除成功，返回 > 0 的移除 Timer 的数量，否则返回 0
-    public int RemoveAllTimerByCallback(Action<T> callback)
+    public int RemoveAllTimerByUpdateCallback(Action<T> callback)
     {
         var remove_count = 0;
         var count = timer_list.Count;
@@ -445,6 +445,34 @@ public class TimerMgr<T> : ITimerUpdate
         for (int i = 0; i < count; i++)
         {
             if (adding_list[i].on_update == callback)
+            {
+                adding_list[i].remove = true;
+                ++remove_count;
+            }
+        }
+        return remove_count;
+    }
+    
+    // 移除 callback 相同实例的多个 Timer，移除成功，返回 > 0 的移除 Timer 的数量，否则返回 0
+    public int RemoveAllTimerByCompleteCallback(Action<T> callback)
+    {
+        var remove_count = 0;
+        var count = timer_list.Count;
+        // 更新中的列表
+        for (int i = 0; i < count; i++)
+        {
+            if (timer_list[i].on_complete == callback)
+            {
+                timer_list[i].remove = true;
+                ++remove_count;
+            }
+        }
+
+        // 添加队列的列表
+        count = adding_list.Count;
+        for (int i = 0; i < count; i++)
+        {
+            if (adding_list[i].on_complete == callback)
             {
                 adding_list[i].remove = true;
                 ++remove_count;
@@ -557,7 +585,7 @@ public class TimerMgr<T> : ITimerUpdate
                     var apply_time = timer.with_time_scale ? deltaTime_with_timescale : deltaTime_without_timescale;
 
                     timer.elapsed += apply_time;
-                    if (timer.elapsed >= timer.interval || timer.interval == 0)
+                    if (timer.elapsed >= timer.interval)
                     { // 这里暂时不做补帧处理
 #if __TIMER_MGR_PROFILE__
                         // 这里 Profile 发现有 GC，因为外头的回调的内容有 GC 问题
