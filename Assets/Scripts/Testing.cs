@@ -11,8 +11,8 @@ public class Testing : MonoBehaviour
     public int no_arg_without_time_scale_timer_id = -1;
     public int arg_without_time_scale_timer_id = -1;
     public int no_arg_delaycall_timer_id = -1;
-    public int no_arg_call_everyframe_timer_id = -1;
-    public int no_arg_call_interval_timer_id = -1;
+    public int no_arg_everyframecall_timer_id = -1;
+    public int no_arg_intervalcall_timer_id = -1;
 
     public float with_time_scale_count;
     public float without_time_scale_count;
@@ -62,16 +62,16 @@ public class Testing : MonoBehaviour
             no_arg_delaycall_timer_id = -1;
         }
 
-        if (no_arg_call_everyframe_timer_id != -1)
+        if (no_arg_everyframecall_timer_id != -1)
         {
-            TimerMgr.Inst.RemoveTimer(no_arg_call_everyframe_timer_id);
-            no_arg_call_everyframe_timer_id = -1;
+            TimerMgr.Inst.RemoveTimer(no_arg_everyframecall_timer_id);
+            no_arg_everyframecall_timer_id = -1;
         }
 
-        if (no_arg_call_interval_timer_id != -1)
+        if (no_arg_intervalcall_timer_id != -1)
         {
-            TimerMgr<Player>.Inst.RemoveTimer(no_arg_call_interval_timer_id);
-            no_arg_call_interval_timer_id = -1;
+            TimerMgr<Player>.Inst.RemoveTimer(no_arg_intervalcall_timer_id);
+            no_arg_intervalcall_timer_id = -1;
         }
     }
 
@@ -215,18 +215,18 @@ public class Testing : MonoBehaviour
 
     private void _Testing_CallEveryFrame()
     {
-        if (no_arg_call_everyframe_timer_id != -1)
+        if (no_arg_everyframecall_timer_id != -1)
         {
-            TimerMgr.Inst.RemoveTimer(no_arg_call_everyframe_timer_id);
+            TimerMgr.Inst.RemoveTimer(no_arg_everyframecall_timer_id);
         }
 
         var counter = 0;
-        no_arg_call_everyframe_timer_id = TimerMgr.Inst.EveryFrameCall(() =>
+        no_arg_everyframecall_timer_id = TimerMgr.Inst.EveryFrameCall(() =>
         {
             if (++counter > 120) // 60 FPS，相当于每 2 秒输出一次
             {
                 counter = 0;
-                Debug.Log("This is my call everyframe tesitng.");
+                Debug.Log("This is my everyframe call tesitng.");
             }
         });
     }
@@ -240,15 +240,15 @@ public class Testing : MonoBehaviour
 
     private void _Testing_CallInterval()
     {
-        if (no_arg_call_interval_timer_id != -1)
+        if (no_arg_intervalcall_timer_id != -1)
         {
-            TimerMgr<Player>.Inst.RemoveTimer(no_arg_call_interval_timer_id);
+            TimerMgr<Player>.Inst.RemoveTimer(no_arg_intervalcall_timer_id);
         }
 
-        no_arg_call_interval_timer_id = TimerMgr<Player>.Inst.IntervalCall(player =>
+        no_arg_intervalcall_timer_id = TimerMgr<Player>.Inst.IntervalCall(player =>
         {
             player.pos += Vector2.one;
-            Debug.Log($"current player pos : {player.pos}");
+            Debug.Log($"call interval, current player pos : {player.pos}");
         }, player, 1.5f);
     }
 }
