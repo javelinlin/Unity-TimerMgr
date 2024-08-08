@@ -9,6 +9,7 @@ public class Testing : MonoBehaviour
 {
     public int no_arg_with_time_scale_timer_id = -1;
     public int no_arg_without_time_scale_timer_id = -1;
+    public int arg_without_time_scale_timer_id = -1;
 
     public float with_time_scale_count;
     public float without_time_scale_count;
@@ -18,11 +19,32 @@ public class Testing : MonoBehaviour
 
     public Slider timescale_slider;
     public Text timescale_txt;
-
+    
     private void Start()
     {
         timescale_slider.value = Time.timeScale;
         timescale_txt.text = timescale_slider.value.ToString();
+    }
+
+    private void OnDestroy()
+    {
+        // make sure removing all timer
+        if (no_arg_with_time_scale_timer_id != -1)
+        {
+            TimerMgr.Inst.RemoveTimerById(no_arg_with_time_scale_timer_id);
+            no_arg_with_time_scale_timer_id = -1;
+        }
+        if (no_arg_without_time_scale_timer_id != -1)
+        {
+            TimerMgr.Inst.RemoveTimerById(no_arg_without_time_scale_timer_id);
+            no_arg_without_time_scale_timer_id = -1;
+        }
+
+        if (arg_without_time_scale_timer_id != -1)
+        {
+            TimerMgr<string>.Inst.RemoveTimerById(arg_without_time_scale_timer_id);
+            arg_without_time_scale_timer_id = -1;
+        }
     }
 
     public void OnWithTimeScaleAddTimerBtnClick()
@@ -58,6 +80,7 @@ public class Testing : MonoBehaviour
     private void no_arg_with_time_scale_timer_complete()
     {
         Debug.Log($"no_arg_with_time_scale_timer_complete");
+        no_arg_with_time_scale_timer_id = -1;
     }
 
     //==========================
@@ -94,6 +117,7 @@ public class Testing : MonoBehaviour
     private void no_arg_without_time_scale_timer_complete()
     {
         Debug.Log($"no_arg_without_time_scale_timer_complete");
+        no_arg_without_time_scale_timer_id = -1;
     }
     //==========================
 
@@ -107,6 +131,14 @@ public class Testing : MonoBehaviour
 
     public void OnDelaySayHiBtnClick()
     {
-        TimerMgr<string>.Inst.AddTimer(name => { Debug.Log($"Hi, {name}"); }, "Jave", null, null);
+        if (arg_without_time_scale_timer_id != -1)
+        {
+            TimerMgr<string>.Inst.RemoveTimerById(arg_without_time_scale_timer_id);
+        }
+        arg_without_time_scale_timer_id = TimerMgr<string>.Inst.AddTimer(name =>
+        {
+            Debug.Log($"Hi, {name}");
+            arg_without_time_scale_timer_id = -1;
+        }, "Jave", null, null);
     }
 }

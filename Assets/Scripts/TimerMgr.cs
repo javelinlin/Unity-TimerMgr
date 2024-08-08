@@ -31,12 +31,18 @@ public class TimerMgr
             if (_inst == null)
             {
                 _inst = new TimerMgr();
-
-                var go = new GameObject($"{typeof(TimerMgr).GetType().Name}");
-                var timer_mono_behaviour = go.AddComponent<TimerMonoBehaviour>();
-                timer_mono_behaviour.timer = _inst;
-                go.hideFlags = HideFlags.HideAndDontSave;
-                GameObject.DontDestroyOnLoad(go);
+                var timer_mono_behaviour = GameObject.FindObjectOfType<TimerMonoBehaviour>();
+                if (timer_mono_behaviour == null)
+                {
+                    var go = new GameObject($"{typeof(TimerMgr).GetType().Name}");
+                    if (timer_mono_behaviour == null)
+                    {
+                        timer_mono_behaviour = go.AddComponent<TimerMonoBehaviour>();
+                    }
+                    timer_mono_behaviour.timer = _inst;
+                    go.hideFlags = HideFlags.HideAndDontSave;
+                    GameObject.DontDestroyOnLoad(go);
+                }
             }
             return _inst;
         }
@@ -311,13 +317,21 @@ public class TimerMgr<T> : ITimerUpdate
             if (_inst == null)
             {
                 _inst = new TimerMgr<T>();
+                var timer_mono_behaviour = GameObject.FindObjectOfType<ITimerUpdateMono>();
+                if (timer_mono_behaviour == null)
+                {
+                    var go = new GameObject($"{typeof(TimerMgr<T>).GetType().Name}");
+                    if (timer_mono_behaviour == null)
+                    {
+                        timer_mono_behaviour = go.AddComponent<ITimerUpdateMono>();
+                    }
 
-                var go = new GameObject($"{typeof(TimerMgr<T>).GetType().Name}");
-                var timer_mono_behaviour = go.AddComponent<ITimerUpdateMono>();
-                timer_mono_behaviour.timer = _inst;
-                go.hideFlags = HideFlags.HideAndDontSave;
-                GameObject.DontDestroyOnLoad(go);
+                    timer_mono_behaviour.timer = _inst;
+                    go.hideFlags = HideFlags.HideAndDontSave;
+                    GameObject.DontDestroyOnLoad(go);
+                }
             }
+
             return _inst;
         }
     }
