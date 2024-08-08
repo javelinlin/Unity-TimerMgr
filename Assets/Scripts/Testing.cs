@@ -188,7 +188,7 @@ public class Testing : MonoBehaviour
             TimerMgr<string>.Inst.RemoveTimer(arg_without_time_scale_timer_id);
         }
 
-        arg_without_time_scale_timer_id = TimerMgr<string>.Inst.CallNextFrame(name =>
+        arg_without_time_scale_timer_id = TimerMgr<string>.Inst.NextFrameCall(name =>
         {
             Debug.Log($"Hi, {name}");
             arg_without_time_scale_timer_id = -1;
@@ -210,7 +210,7 @@ public class Testing : MonoBehaviour
         }
 
         no_arg_delaycall_timer_id =
-            TimerMgr.Inst.DelayCallback(() => { Debug.Log("This is my delay call testing, after 2 seonds."); }, 2f);
+            TimerMgr.Inst.DelayCall(() => { Debug.Log("This is my delay call testing, after 2 seonds."); }, 2f);
     }
 
     private void _Testing_CallEveryFrame()
@@ -221,7 +221,7 @@ public class Testing : MonoBehaviour
         }
 
         var counter = 0;
-        no_arg_call_everyframe_timer_id = TimerMgr.Inst.CallEveryFrame(() =>
+        no_arg_call_everyframe_timer_id = TimerMgr.Inst.EveryFrameCall(() =>
         {
             if (++counter > 120) // 60 FPS，相当于每 2 秒输出一次
             {
@@ -245,7 +245,7 @@ public class Testing : MonoBehaviour
             TimerMgr<Player>.Inst.RemoveTimer(no_arg_call_interval_timer_id);
         }
 
-        no_arg_call_interval_timer_id = TimerMgr<Player>.Inst.CallInterval(player =>
+        no_arg_call_interval_timer_id = TimerMgr<Player>.Inst.IntervalCall(player =>
         {
             player.pos += Vector2.one;
             Debug.Log($"current player pos : {player.pos}");

@@ -31,25 +31,25 @@ public static class TimeMgrExtension
     // 无参调用
     // ======================
     // 下一帧调用
-    public static int CallNextFrame(this TimerMgr timer, Action callback)
+    public static int NextFrameCall(this TimerMgr timer, Action callback)
     {
         return timer.AddTimer(null, callback, 0.0f, 1, false);
     }
 
     // 每一帧调用
-    public static int CallEveryFrame(this TimerMgr timer, Action callback)
+    public static int EveryFrameCall(this TimerMgr timer, Action callback)
     {
         return timer.AddTimer(callback, null, 0.0f, 0, false);
     }
 
     // 延迟调用
-    public static int DelayCallback(this TimerMgr timer, Action callback, float delay)
+    public static int DelayCall(this TimerMgr timer, Action callback, float delay)
     {
         return timer.AddTimer(null, callback, delay, 1, false);
     }
 
     // 频率调用
-    public static int CallInterval(this TimerMgr timer, Action callback, float interval)
+    public static int IntervalCall(this TimerMgr timer, Action callback, float interval)
     {
         return timer.AddTimer(callback, null, interval, 0, false);
     }
@@ -58,25 +58,25 @@ public static class TimeMgrExtension
     // 有参调用
     // ======================
     // 下一帧调用
-    public static int CallNextFrame<T>(this TimerMgr<T> timer, Action<T> callback, T arg)
+    public static int NextFrameCall<T>(this TimerMgr<T> timer, Action<T> callback, T arg)
     {
         return timer.AddTimer(callback, arg, null, default, 0.0f, 1, false);
     }
 
     // 每一帧调用
-    public static int CallEveryFrame<T>(this TimerMgr<T> timer, Action<T> callback, T arg)
+    public static int EveryFrameCall<T>(this TimerMgr<T> timer, Action<T> callback, T arg)
     {
         return timer.AddTimer(callback, arg, null, default, 0.0f, 0, false);
     }
 
     // 延迟调用
-    public static int DelayCallback<T>(this TimerMgr<T> timer, Action<T> callback, T arg, float delay)
+    public static int DelayCall<T>(this TimerMgr<T> timer, Action<T> callback, T arg, float delay)
     {
         return timer.AddTimer(null, default, callback, default, delay, 0, false);
     }
 
     // 频率调用
-    public static int CallInterval<T>(this TimerMgr<T> timer, Action<T> callback, T arg, float interval)
+    public static int IntervalCall<T>(this TimerMgr<T> timer, Action<T> callback, T arg, float interval)
     {
         return timer.AddTimer(callback, arg, null, default, interval, 0, false);
     }
