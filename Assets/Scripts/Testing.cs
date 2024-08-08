@@ -12,7 +12,7 @@ public class Testing : MonoBehaviour
     public int arg_without_time_scale_timer_id = -1;
     public int no_arg_delaycall_timer_id = -1;
     public int no_arg_everyframecall_timer_id = -1;
-    public int no_arg_intervalcall_timer_id = -1;
+    public int with_arg_intervalcall_timer_id = -1;
 
     public float with_time_scale_count;
     public float without_time_scale_count;
@@ -68,10 +68,10 @@ public class Testing : MonoBehaviour
             no_arg_everyframecall_timer_id = -1;
         }
 
-        if (no_arg_intervalcall_timer_id != -1)
+        if (with_arg_intervalcall_timer_id != -1)
         {
-            TimerMgr<Player>.Inst.RemoveTimer(no_arg_intervalcall_timer_id);
-            no_arg_intervalcall_timer_id = -1;
+            TimerMgr<Player>.Inst.RemoveTimer(with_arg_intervalcall_timer_id);
+            with_arg_intervalcall_timer_id = -1;
         }
     }
 
@@ -240,12 +240,12 @@ public class Testing : MonoBehaviour
 
     private void _Testing_CallInterval()
     {
-        if (no_arg_intervalcall_timer_id != -1)
+        if (with_arg_intervalcall_timer_id != -1)
         {
-            TimerMgr<Player>.Inst.RemoveTimer(no_arg_intervalcall_timer_id);
+            TimerMgr<Player>.Inst.RemoveTimer(with_arg_intervalcall_timer_id);
         }
 
-        no_arg_intervalcall_timer_id = TimerMgr<Player>.Inst.IntervalCall(player =>
+        with_arg_intervalcall_timer_id = TimerMgr<Player>.Inst.IntervalCall(player =>
         {
             player.pos += Vector2.one;
             Debug.Log($"call interval, current player pos : {player.pos}");
