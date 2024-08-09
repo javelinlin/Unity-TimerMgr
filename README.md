@@ -80,9 +80,10 @@
     //==============================
     private void _Testing_NextFrameCall()
     {
+        const int TIMES = 10;
+
         // sync call
         _refreshSyncCount = 0;
-        const int TIMES = 10;
         for (int i = 0; i < TIMES; i++)
         {
             _RefreshBySync();
