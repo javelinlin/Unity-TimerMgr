@@ -26,8 +26,10 @@
             TimerMgr.Inst.RemoveTimer(no_arg_delaycall_timer_id);
         }
 
-        no_arg_delaycall_timer_id =
-            TimerMgr.Inst.DelayCall(() => { Debug.Log("This is my delay call testing, after 2 seonds."); }, 2f);
+        no_arg_delaycall_timer_id = TimerMgr.Inst.DelayCall(() =>
+        {
+           Debug.Log("This is my delay call testing, after 2 seonds.");
+        }, 2f);
     }
 
     //==============================
