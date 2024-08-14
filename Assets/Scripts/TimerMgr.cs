@@ -53,6 +53,7 @@ public class TimerMgr
         public int instID = -1;         // Timer 的实例 ID
         public Action on_update;        // 每轮回调的方法，用泛型来避免 boxing
         public Action on_complete;      // 完成回调的方法，用泛型来避免 boxing
+        public bool start_update;       // 开始时执行一次更新
         public float interval;          // 执行周期（秒）
         public int repeat;              // <=0 无限次
         public int act_times;           // 执行过的次数
@@ -74,17 +75,28 @@ public class TimerMgr
 
     private static int _s_inst_id = 0;
 
-    // 返回 Timer 实例 ID
+    /// <summary>
+    /// 添加定时器
+    /// </summary>
+    /// <param name="on_update">定时器更新回调</param>
+    /// <param name="on_complete">定时器结束回调</param>
+    /// <param name="interval">时间间隔</param>
+    /// <param name="start_update">开始时执行一次回调</param>
+    /// <param name="repeat">重复次数</param>
+    /// <param name="with_time_scale"></param>
+    /// <returns>返回 Timer 实例 ID</returns>
     public int AddTimer(
         Action on_update,
         Action on_complete = null,
-        float interval = 1.0f, int repeat = 1, bool with_time_scale = false)
+         float interval = 1.0f, int repeat = 1, bool start_update = false, bool with_time_scale = false)
     {
         TimerInfo timer = timer_pool.Count > 0 ? timer_pool.Pop() : new TimerInfo();
-        timer.instID = timer.instID == -1 ? ++_s_inst_id : timer.instID;
+        // timer.instID = timer.instID == -1 ? ++_s_inst_id : timer.instID;
+        timer.instID = ++_s_inst_id;
         timer.on_update = on_update;
         timer.on_complete = on_complete;
         timer.interval = interval;
+        timer.start_update = start_update;
         timer.repeat = repeat;
         timer.act_times = 0;
         timer.with_time_scale = with_time_scale;
@@ -236,8 +248,12 @@ public class TimerMgr
                 }
                 else
                 {
+                    if (timer.start_update && timer.act_times == 0)
+                    {// 初始执行一次
+                        timer.on_update?.Invoke();
+                        ++timer.act_times;
+                    }
                     var apply_time = timer.with_time_scale ? deltaTime_with_timescale : deltaTime_without_timescale;
-
                     timer.elapsed += apply_time;
                     if (timer.elapsed >= timer.interval)
                     { // 这里暂时不做补帧处理
@@ -343,6 +359,7 @@ public class TimerMgr<T> : ITimerUpdate
         public T on_update_arg;         // 每轮回调的方法参数
         public Action<T> on_complete;   // 完成回调的方法，用泛型来避免 boxing
         public T on_complete_arg;       // 完成回调的方法参数
+        public bool start_update;       // 开始时执行一次update
         public float interval;          // 执行周期（秒）
         public int repeat;              // <=0 无限次
         public int act_times;           // 执行过的次数
@@ -381,14 +398,16 @@ public class TimerMgr<T> : ITimerUpdate
     public int AddTimer(
         Action<T> on_update, T on_update_arg = default(T),
         Action<T> on_complete = null, T on_complete_arg = default(T),
-        float interval = 1.0f, int repeat = 1, bool with_time_scale = false)
+        float interval = 1.0f, int repeat = 1, bool start_update = false, bool with_time_scale = false)
     {
         TimerInfo timer = timer_pool.Count > 0 ? timer_pool.Pop() : new TimerInfo();
-        timer.instID = timer.instID == -1 ? ++_s_inst_id : timer.instID;
+        // timer.instID = timer.instID == -1 ? ++_s_inst_id : timer.instID;
+        timer.instID = ++_s_inst_id;
         timer.on_update = on_update;
         timer.on_update_arg = on_update_arg;
         timer.on_complete = on_complete;
         timer.on_complete_arg = on_complete_arg;
+        timer.start_update = start_update;
         timer.interval = interval;
         timer.repeat = repeat;
         timer.act_times = 0;
@@ -582,6 +601,11 @@ public class TimerMgr<T> : ITimerUpdate
                 }
                 else
                 {
+                    if (timer.start_update && timer.act_times == 0)
+                    {// 开始时执行一次update
+                        timer.on_update.Invoke(timer.on_update_arg);
+                        ++timer.act_times;
+                    }
                     var apply_time = timer.with_time_scale ? deltaTime_with_timescale : deltaTime_without_timescale;
 
                     timer.elapsed += apply_time;
