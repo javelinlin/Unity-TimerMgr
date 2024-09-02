@@ -249,14 +249,18 @@ public class TimerMgr
                 else
                 {
                     if (timer.start_update && timer.act_times == 0)
-                    {// 初始执行一次
+                    {
+                        // 初始执行一次
                         timer.on_update?.Invoke();
                         ++timer.act_times;
                     }
+
                     var apply_time = timer.with_time_scale ? deltaTime_with_timescale : deltaTime_without_timescale;
                     timer.elapsed += apply_time;
+
                     if (timer.elapsed >= timer.interval)
-                    { // 这里暂时不做补帧处理
+                    {
+                        // 这里暂时不做补帧处理
                         timer.elapsed = timer.elapsed % timer.interval;
                         timer.on_update?.Invoke();
                         ++timer.act_times;
@@ -413,6 +417,13 @@ public class TimerMgr<T> : ITimerUpdate
         timer.act_times = 0;
         timer.with_time_scale = with_time_scale;
         timer.remove = false;
+
+        if (timer.on_update == null && timer.on_complete == null)
+        {
+            Debug.LogError($"Timer 回调不能同时 on_update 和 on_complete 都为空");
+            return -1;
+        }
+        
         adding_list.Add(timer);
         return timer.instID;
     }
@@ -593,7 +604,7 @@ public class TimerMgr<T> : ITimerUpdate
                     // 这里 Profile 发现有 GC，因为外头的回调的内容有 GC 问题
                     Profiler.BeginSample("TimerMgr<T>.Update 333.222");
 #endif
-                    timer.on_update.Invoke(timer.on_update_arg);
+                    timer.on_update?.Invoke(timer.on_update_arg);
                     ++timer.act_times;
 #if __TIMER_MGR_PROFILE__
                     Profiler.EndSample();
@@ -602,24 +613,28 @@ public class TimerMgr<T> : ITimerUpdate
                 else
                 {
                     if (timer.start_update && timer.act_times == 0)
-                    {// 开始时执行一次update
-                        timer.on_update.Invoke(timer.on_update_arg);
+                    {
+                        // 开始时执行一次update
+                        timer.on_update?.Invoke(timer.on_update_arg);
                         ++timer.act_times;
                     }
+
                     var apply_time = timer.with_time_scale ? deltaTime_with_timescale : deltaTime_without_timescale;
 
                     timer.elapsed += apply_time;
+
                     if (timer.elapsed >= timer.interval)
-                    { // 这里暂时不做补帧处理
+                    {
+                        // 这里暂时不做补帧处理
 #if __TIMER_MGR_PROFILE__
-                        // 这里 Profile 发现有 GC，因为外头的回调的内容有 GC 问题
-                        Profiler.BeginSample("TimerMgr<T>.Update 333.222");
+                    // 这里 Profile 发现有 GC，因为外头的回调的内容有 GC 问题
+                    Profiler.BeginSample("TimerMgr<T>.Update 333.222");
 #endif
                         timer.elapsed = timer.elapsed % timer.interval;
-                        timer.on_update.Invoke(timer.on_update_arg);
+                        timer.on_update?.Invoke(timer.on_update_arg);
                         ++timer.act_times;
 #if __TIMER_MGR_PROFILE__
-                        Profiler.EndSample();
+                    Profiler.EndSample();
 #endif
                     }
                 }
