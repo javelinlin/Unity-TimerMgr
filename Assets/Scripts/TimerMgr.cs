@@ -34,7 +34,7 @@ public class TimerMgr
                 var timer_mono_behaviour = GameObject.FindObjectOfType<TimerMonoBehaviour>();
                 if (timer_mono_behaviour == null)
                 {
-                    var go = new GameObject($"{typeof(TimerMgr).GetType().Name}");
+                    var go = new GameObject(nameof(TimerMgr));
                     if (timer_mono_behaviour == null)
                     {
                         timer_mono_behaviour = go.AddComponent<TimerMonoBehaviour>();
@@ -101,6 +101,7 @@ public class TimerMgr
         timer.act_times = 0;
         timer.with_time_scale = with_time_scale;
         timer.remove = false;
+        timer.elapsed = 0f;
         adding_list.Add(timer);
         return timer.instID;
     }
@@ -260,8 +261,14 @@ public class TimerMgr
 
                     if (timer.elapsed >= timer.interval)
                     {
-                        // 这里暂时不做补帧处理
-                        timer.elapsed = timer.elapsed % timer.interval;
+                        // // method1:
+                        // // 这里暂时不做补帧处理
+                        // timer.elapsed = timer.elapsed % timer.interval;
+                        
+                        // method2:
+                        // 补帧处理
+                        // jave.lin : 一般如果为了性能更优，补帧的话可以另起一个回调，让外部少处理和数据逻辑无关的 UI 逻辑
+                        timer.elapsed -= timer.interval;
                         timer.on_update?.Invoke();
                         ++timer.act_times;
                     }
@@ -340,7 +347,7 @@ public class TimerMgr<T> : ITimerUpdate
                 var timer_mono_behaviour = GameObject.FindObjectOfType<ITimerUpdateMono>();
                 if (timer_mono_behaviour == null)
                 {
-                    var go = new GameObject($"{typeof(TimerMgr<T>).GetType().Name}");
+                    var go = new GameObject(nameof(TimerMgr<T>));
                     if (timer_mono_behaviour == null)
                     {
                         timer_mono_behaviour = go.AddComponent<ITimerUpdateMono>();
@@ -417,6 +424,7 @@ public class TimerMgr<T> : ITimerUpdate
         timer.act_times = 0;
         timer.with_time_scale = with_time_scale;
         timer.remove = false;
+        timer.elapsed = 0f;
 
         if (timer.on_update == null && timer.on_complete == null)
         {
@@ -630,7 +638,14 @@ public class TimerMgr<T> : ITimerUpdate
                     // 这里 Profile 发现有 GC，因为外头的回调的内容有 GC 问题
                     Profiler.BeginSample("TimerMgr<T>.Update 333.222");
 #endif
-                        timer.elapsed = timer.elapsed % timer.interval;
+                        // // method1:
+                        // // 这里暂时不做补帧处理
+                        // timer.elapsed = timer.elapsed % timer.interval;
+                        
+                        // method2:
+                        // 补帧处理
+                        // jave.lin : 一般如果为了性能更优，补帧的话可以另起一个回调，让外部少处理和数据逻辑无关的 UI 逻辑
+                        timer.elapsed -= timer.interval;
                         timer.on_update?.Invoke(timer.on_update_arg);
                         ++timer.act_times;
 #if __TIMER_MGR_PROFILE__
